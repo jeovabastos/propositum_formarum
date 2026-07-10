@@ -2,6 +2,9 @@
 - It's a study case about using AI to create an application in less time and effort possible.
 - My focus was acting as an software architect, leading the AI to create the functions as given specs.
 
+# Figma design project
+(https://www.figma.com/design/IRei9WFXCm5gTvm3PWZ9kJ/Propositum-Formarum?node-id=0-1&t=eFbOmrgtHtUYvdmE-1)
+
 # Screenshots
 - Main page:
 ![Main Page](/public/Main.png)
