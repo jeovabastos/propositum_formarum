@@ -353,8 +353,9 @@ async fn get_indexed_images(
             // Adicionamos o '%' no final para o SQL buscar subpastas/arquivos contidos nela
             let folder_filter = format!("{}%", folder_path);
 
+            //                 "SELECT id, name, path, notes FROM images WHERE path LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"
             sqlx::query_as::<_, ImageEntry>(
-                "SELECT id, name, path, notes FROM images WHERE path LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"
+                "SELECT id, name, path, notes FROM images WHERE path LIKE ? ORDER BY name ASC LIMIT ? OFFSET ?"
             )
             .bind(folder_filter)
             .bind(limit)
