@@ -235,8 +235,8 @@ export const AsideRight: React.FC = () => {
                   Path: {selectedImage.path}
                 </p>
 
-                <div className="painel-detalhes-basico-tags">
-                <p>Tags:</p>
+                <div className="aside_right_existing_tags_box">
+                  <p>Currently image tags:</p>
                   {imageTags.map((tag) => {
                     const isSelected = selectedTags.includes(tag.name);
                     
@@ -289,8 +289,8 @@ export const AsideRight: React.FC = () => {
 
                   className="painel-detalhes-form"
                 >
-                  <div className="painel-detalhes-form-tags">
-                    <p className="option">Link existing tags:</p>
+                  <div className="aside_right_existing_tags_box">
+                    <p className="option">Link other tags:</p>
 
                     {allTags
                       .filter(t => !imageTags.some(imgTag => imgTag.id === t.id))

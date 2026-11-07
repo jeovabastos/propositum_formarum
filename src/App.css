@@ -33,7 +33,28 @@
 }
 
 .aside_left{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 25%;
+  max-height: 100%;
+}
+
+.aside_left_header{
+  display: flex;
+  flex-direction: column;
+  height: 10%;
+}
+
+.aside_left_content{
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+}
+
+.folders_nav{
+  height: 50%;
+  overflow-y: scroll;
 }
 
 .toolbar{
@@ -457,8 +478,10 @@ input[type="checkbox"] {
   flex-wrap: wrap;
   gap: 6px;
   padding: 10px;
-  max-height: 250px; /* Limita a altura para dar scroll se tiver centenas de tags */
-  overflow-y: auto;
+  /* max-height: 250px; */
+  /* height: 50%; */
+  overflow-y: scroll;
+  /* overflow-y: auto; */
 }
 
 .booru-tag-button {
