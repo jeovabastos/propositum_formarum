@@ -33,6 +33,7 @@ tauri-plugin-clipboard = "2.1.11"
 tauri-plugin-fs = "2.0"
 kmeans_colors = "0.6"
 palette = "0.7"
+blake3 = "1.8.7"
 
 [profile.dev.package."*"]
 opt-level = 3

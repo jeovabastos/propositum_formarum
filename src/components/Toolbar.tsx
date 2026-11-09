@@ -2,10 +2,18 @@ import React from "react";
 import { useCatalogo } from "../context/CatalogoContext";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
+import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
+// O backend devolve `name` (antes a interface declarava `nome`, mas só o id era usado).
 interface Tag {
   id: number;
-  nome: string;
+  name: string;
+}
+
+// Payload do evento "index-progress" emitido por index_images.
+interface IndexProgress {
+  indexed: number;
+  done: boolean;
 }
 
 export const Toolbar: React.FC = () => {
@@ -44,9 +52,20 @@ export const Toolbar: React.FC = () => {
         setLoading(true);
         setMessage("Indexing files...");
 
+        let unlisten: UnlistenFn | null = null;
+
         try {
-            await invoke("index_images", { path: selected });
-            updateFolders()
+            // O listener precisa ser registrado ANTES do invoke para não perder eventos.
+            unlisten = await listen<IndexProgress>("index-progress", (event) => {
+                setMessage(`Indexing files... ${event.payload.indexed} found`);
+            });
+
+            // index_images agora devolve só o total (não mais a lista de imagens).
+            // As imagens são carregadas por página via get_indexed_images,
+            // que é disparado pelo setCatalogVersion/setPage abaixo.
+            const total = await invoke<number>("index_images", { path: selected });
+
+            await updateFolders();
 
             try {
                 const tagsInDatabase = await invoke<Tag[]>("get_all_tags");
@@ -61,11 +80,14 @@ export const Toolbar: React.FC = () => {
 
             setCatalogVersion(prev => prev + 1);
             setPage(0);
+            setMessage(`${total} images indexed.`);
 
         } catch (error) {
+            // Agora erros de gravação no banco chegam aqui (antes eram engolidos no Rust).
             console.error("Erro ao indexar:", error);
-            setMessage("Erro ao processar pasta.");
+            setMessage(`Erro ao processar pasta: ${error}`);
         } finally {
+            unlisten?.();
             setLoading(false);
         }
     }
@@ -107,6 +129,12 @@ export const Toolbar: React.FC = () => {
         }
     }
 
+    // `page` vira u32 no Rust: um valor negativo ou NaN faria o invoke falhar.
+    function handlePageInput(e: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(e.target.value, 10);
+        setPage(Number.isNaN(value) ? 0 : Math.max(0, value - 1));
+    }
+
     return (
         <div className="toolbar">
             <div className="toolbar_folders">
@@ -124,8 +152,9 @@ export const Toolbar: React.FC = () => {
 
                 <input
                     type="number"
+                    min={1}
                     value={page + 1}
-                    onChange={(e) => setPage(Number(e.target.value) - 1)}
+                    onChange={handlePageInput}
                 />
 
                 <button disabled={images.length < LIMIT} onClick={() => setPage(p => p + 1)}>
